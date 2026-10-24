@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#101a2b">
+<title>The Rebranding colour palette</title>
+<style>
+  :root{color-scheme:dark;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+    --bg:#101a2b;--glow:#30496c;--ink:#f6f2e9;--muted:#a8b5c8;--line:#334965;--accent:#f4c96b;--panel:#17243a;
+    --taken-bg:#3b4250;--taken-ink:#7d8797;--taken-line:#566073;--tile-bg:#243b5c;--tile-ink:#e5edf6;--tile-line:#3d5878}
+  @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark}}
+  @media (prefers-color-scheme:light){:root:not([data-theme="dark"]){color-scheme:light;
+    --bg:#f3efe6;--glow:#ffffff;--ink:#1b2335;--muted:#586377;--line:#d3cbb9;--accent:#8a5f0a;--panel:#fffaf0;
+    --taken-bg:#d4d7dd;--taken-ink:#8b93a1;--taken-line:#b4bac5;--tile-bg:#e2dccd;--tile-ink:#2b3446;--tile-line:#c4bba6}}
+  :root[data-theme="dark"]{color-scheme:dark}
+  html{scroll-padding-top:env(safe-area-inset-top,0px)}
+  *{box-sizing:border-box}
+  body{margin:0;min-height:100vh;background:radial-gradient(ellipse at 50% -15%,var(--glow) 0,transparent 46%),var(--bg);color:var(--ink);font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;display:flex;justify-content:center;padding:30px 14px 44px}
+  main{width:min(880px,100%);text-align:center}
+  .eyebrow{font-size:.72rem;letter-spacing:.22em;text-transform:uppercase;color:var(--accent);font-weight:750;margin:4px 0 10px}
+  h1{font-family:Georgia,"Times New Roman",serif;font-weight:500;font-size:clamp(2rem,6.4vw,3.8rem);line-height:1.05;margin:0 0 14px;letter-spacing:-.03em}
+  .intro{max-width:540px;margin:0 auto 22px;color:var(--muted);line-height:1.55}
+  .legend{display:flex;flex-wrap:wrap;justify-content:center;gap:8px 16px;margin:0 0 18px;font-size:.82rem;color:var(--muted)}
+  .legend span{display:inline-flex;align-items:center;gap:7px}
+  .legend i{width:16px;height:16px;border-radius:5px;border:1px solid #0003;display:inline-block}
+  .board-wrap{background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:clamp(10px,2.8vw,22px);box-shadow:0 22px 60px #0003}
+  .board{display:grid;grid-template-columns:repeat(10,minmax(0,1fr));gap:clamp(4px,1vw,8px)}
+  .tile{appearance:none;border:1px solid var(--tile-line);border-radius:9px;aspect-ratio:1;background:var(--tile-bg);color:var(--tile-ink);overflow-wrap:anywhere;font:700 clamp(.58rem,1.8vw,.92rem)/1 ui-sans-serif,system-ui,sans-serif;cursor:pointer;box-shadow:inset 0 1px 0 #ffffff30,0 3px 7px #0002;transition:transform .14s,box-shadow .14s,opacity .14s;touch-action:manipulation;padding:0}
+  .tile:hover:not(:disabled),.tile:focus-visible{transform:translateY(-2px) scale(1.06);box-shadow:0 0 0 3px var(--accent),0 8px 16px #0004;outline:none;position:relative;z-index:1}
+  .tile:disabled{cursor:default}
+  .tile.sealed{opacity:.55}
+  .tile.taken{background:var(--taken-bg);color:var(--taken-ink);border:1px dashed var(--taken-line);box-shadow:none;text-decoration:line-through;opacity:1}
+  .tile.mine{opacity:1;background:var(--c);color:var(--t);border-color:#0003;box-shadow:0 0 0 3px var(--accent),0 8px 22px #0005;position:relative;z-index:1;transform:scale(1.08)}
+  .status{min-height:24px;margin:17px 0 0;color:var(--muted);font-size:.88rem}
+  .result{display:none;margin:18px auto 0;padding:16px 20px;max-width:420px;border:1px solid var(--line);border-radius:14px;background:var(--bg);animation:rise .35s ease-out;align-items:center;gap:16px;text-align:left}
+  .result.show{display:flex}
+  .chip{width:64px;height:64px;border-radius:14px;border:1px solid #0003;flex:none}
+  .result-label{font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;color:var(--accent);font-weight:750}
+  .cname{font-family:Georgia,"Times New Roman",serif;font-size:1.7rem;line-height:1.1;margin-top:3px}
+  .chex{color:var(--muted);font-size:.85rem;margin-top:3px;font-variant-numeric:tabular-nums}
+  .foot{font-size:.75rem;color:var(--muted);margin:15px 5px 0;line-height:1.45}
+  @keyframes rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+  @media(max-width:380px){.board{gap:3px}.tile{border-radius:6px}}
+  @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+</style>
+</head>
+<body>
+<main>
+  <div class="eyebrow">Pick your shade</div>
+  <h1>The Rebranding colour palette</h1>
+  <p class="intro">Choose one colour from the bucket. Once you tap, it’s locked in for you and greyed out so nobody else can take it.</p>
+  <section class="board-wrap" aria-label="Choose one colour tile">
+    <div class="board" id="board"></div>
+    <div class="status" id="status" aria-live="polite">Tap one tile to claim your colour.</div>
+    <div class="result" id="result" role="status" aria-live="polite">
+      <div class="chip" id="chip"></div>
+      <div><div class="result-label">Your colour</div><div class="cname" id="cname"></div><div class="chex" id="chex"></div></div>
+    </div>
+  </section>
+  <p class="foot" id="foot">One colour per person. Claimed tiles stay greyed out for everyone.</p>
+</main>
+<script>
+(() => {
+  const COLORS = {
+    purple:{name:'Purple',hex:'#8d41bb',ink:'#ffffff'},
+    pink:{name:'Pink',hex:'#d055a2',ink:'#ffffff'},
+    white:{name:'White',hex:'#ffffff',ink:'#1d2433'},
+    lemon:{name:'Lemon',hex:'#90be40',ink:'#1d2a08'}
+  };
+  const LEMON = new Set([19,31,49,63,82]);
+  function colorOf(n){
+    if (LEMON.has(n)) return 'lemon';
+    const p = (n - 1) % 20 + 1;
+    return p <= 13 ? 'purple' : p <= 17 ? 'pink' : 'white';
+  }
+  const N = 100;
+  const totals = {purple:0,pink:0,white:0,lemon:0};
+  for (let n = 1; n <= N; n++) totals[colorOf(n)]++;
+
+  const $ = id => document.getElementById(id);
+  const board = $('board'), status = $('status'), result = $('result');
+  const pad = n => String(n).padStart(2,'0');
+
+  let claims = {};          // tile number -> claim data
+  let myId = null, mine = null, busy = false, db = null, shared = false;
+
+  // stable fallback id for this browser
+  const store = {
+    get(k){ try { return localStorage.getItem(k); } catch { return null; } },
+    set(k,v){ try { localStorage.setItem(k,v); } catch {} }
+  };
+  let localId = store.get('palette-local-id');
+  if (!localId) { localId = 'g' + Math.random().toString(36).slice(2,10); store.set('palette-local-id', localId); }
+  myId = localId;
+  const savedPick = parseInt(store.get('palette-my-pick'), 10);
+  if (savedPick >= 1 && savedPick <= N) mine = savedPick;
+
+  const tiles = [];
+  for (let n = 1; n <= N; n++) {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'tile';
+    b.textContent = pad(n);
+    b.addEventListener('click', () => claim(n));
+    board.appendChild(b);
+    tiles.push(b);
+  }
+
+  function render(){
+    const taken = Object.keys(claims).map(Number);
+    tiles.forEach((b, i) => {
+      const n = i + 1, c = COLORS[colorOf(n)];
+      const isMine = mine === n;
+      const isTaken = !isMine && !!claims[n];
+      b.classList.toggle('mine', isMine);
+      b.classList.toggle('taken', isTaken);
+      b.classList.toggle('sealed', !isMine && !isTaken && mine !== null);
+      b.disabled = isTaken || isMine || mine !== null || busy;
+      if (isMine) { b.style.setProperty('--c', c.hex); b.style.setProperty('--t', c.ink); b.textContent = c.name; }
+      else { b.style.removeProperty('--c'); b.style.removeProperty('--t'); b.textContent = pad(n); }
+      b.setAttribute('aria-label', isMine ? `Tile ${pad(n)}, ${c.name}, yours`
+        : isTaken ? `Tile ${pad(n)}, already taken`
+        : `Tile ${pad(n)}`);
+    });
+    if (mine !== null) {
+      const c = COLORS[colorOf(mine)];
+      $('chip').style.background = c.hex;
+      $('cname').textContent = c.name;
+      $('chex').textContent = `${c.hex.toUpperCase()} · tile ${pad(mine)}`;
+      result.classList.add('show');
+      status.textContent = 'Your colour is locked in.';
+    } else {
+      result.classList.remove('show');
+      const total = new Set([...taken]).size;
+      status.textContent = total ? `${total} of ${N} colours already claimed. Tap one to claim yours.` : 'Tap one tile to claim your colour.';
+    }
+  }
+
+  async function claim(n){
+    if (mine !== null || busy || claims[n]) return;
+    busy = true; render();
+    try {
+      if (db) {
+        const ref = db.collection('palette-claims').doc(String(n));
+        const lease = await ref.acquire({ holder: myId, ttlMs: 4000 });
+        if (!lease.acquired) { status.textContent = 'Someone just grabbed that one. Try another.'; return; }
+        const snap = await ref.get();
+        if (snap.exists && snap.data() && snap.data().by) { status.textContent = 'That colour was just taken. Try another.'; return; }
+        await ref.set({ n, by: myId, at: Date.now() });
+        claims[n] = { n, by: myId };
+      } else {
+        claims[n] = { n, by: myId };
+      }
+      mine = n;
+      store.set('palette-my-pick', String(n));
+    } catch (e) {
+      status.textContent = 'Couldn’t save that pick. Please try again.';
+    } finally {
+      busy = false; render();
+    }
+  }
+
+  render();
+
+  // Shared mode: light up when the database is available
+  (async () => {
+    try {
+      if (!window.claude || !claude.use) return;
+      const [d, user] = await Promise.all([claude.use('db'), claude.use('user')]);
+      if (!d) return;
+      db = d; shared = true;
+      if (user && user.id) { try { myId = await user.id(); } catch {} }
+      d.collection('palette-claims').onSnapshot(snap => {
+        const next = {};
+        snap.docs.forEach(doc => {
+          const data = doc.data();
+          if (data && data.by) next[Number(doc.id)] = data;
+        });
+        claims = next;
+        const own = Object.keys(next).map(Number).find(k => next[k].by === myId);
+        if (own) { mine = own; store.set('palette-my-pick', String(own)); }
+        render();
+      }, () => {});
+    } catch (e) {}
+  })();
+})();
+</script>
+</body>
+</html>
